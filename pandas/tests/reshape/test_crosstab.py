@@ -743,3 +743,15 @@ class TestCrosstab:
         )
         expected.index.name = "C"
         tm.assert_frame_equal(result, expected)
+
+
+def test_categoricals():
+    g = np.random.RandomState(25982704)
+    a = Series(g.randint(0, 3, size=100)).astype("category")
+    b = Series(g.randint(0, 2, size=100)).astype("category")
+    result = crosstab(a, b, margins=True, dropna=False)
+    columns = Index([0, 1, "All"], dtype="object", name="col_0")
+    index = Index([0, 1, 2, "All"], dtype="object", name="row_0")
+    values = [[18, 16, 34], [18, 16, 34], [16, 16, 32], [52, 48, 100]]
+    expected = DataFrame(values, index, columns)
+    tm.assert_frame_equal(result, expected)
